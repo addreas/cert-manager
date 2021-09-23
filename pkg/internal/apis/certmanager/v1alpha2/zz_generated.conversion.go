@@ -1569,5 +1569,6 @@ func autoConvert_certmanager_X509Subject_To_v1alpha2_X509Subject(in *certmanager
 	out.StreetAddresses = *(*[]string)(unsafe.Pointer(&in.StreetAddresses))
 	out.PostalCodes = *(*[]string)(unsafe.Pointer(&in.PostalCodes))
 	out.SerialNumber = in.SerialNumber
+	// WARNING: in.ExtraNames requires manual conversion: does not exist in peer-type
 	return nil
 }

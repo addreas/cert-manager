@@ -1188,6 +1188,11 @@ spec:
                       type: array
                       items:
                         type: string
+                    extraNames:
+                      description: Extra names to add to the Certificate in the format n.n.n=value.
+                      type: array
+                      items:
+                        type: string
                     localities:
                       description: Cities to be used on the Certificate.
                       type: array

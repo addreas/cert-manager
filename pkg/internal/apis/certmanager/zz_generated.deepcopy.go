@@ -980,6 +980,11 @@ func (in *X509Subject) DeepCopyInto(out *X509Subject) {
 		*out = make([]string, len(*in))
 		copy(*out, *in)
 	}
+	if in.ExtraNames != nil {
+		in, out := &in.ExtraNames, &out.ExtraNames
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
 	return
 }
 

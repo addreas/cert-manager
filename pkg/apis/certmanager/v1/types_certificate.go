@@ -275,6 +275,9 @@ type X509Subject struct {
 	// Serial number to be used on the Certificate.
 	// +optional
 	SerialNumber string `json:"serialNumber,omitempty"`
+	// Extra names to add to the Certificate in the format n.n.n=value.
+	// +optional
+	ExtraNames []string `json:"extraNames,omitempty"`
 }
 
 // CertificateKeystores configures additional keystore output formats to be

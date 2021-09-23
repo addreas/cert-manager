@@ -1535,6 +1535,7 @@ func autoConvert_v1_X509Subject_To_certmanager_X509Subject(in *v1.X509Subject, o
 	out.StreetAddresses = *(*[]string)(unsafe.Pointer(&in.StreetAddresses))
 	out.PostalCodes = *(*[]string)(unsafe.Pointer(&in.PostalCodes))
 	out.SerialNumber = in.SerialNumber
+	out.ExtraNames = *(*[]string)(unsafe.Pointer(&in.ExtraNames))
 	return nil
 }
 
@@ -1552,6 +1553,7 @@ func autoConvert_certmanager_X509Subject_To_v1_X509Subject(in *certmanager.X509S
 	out.StreetAddresses = *(*[]string)(unsafe.Pointer(&in.StreetAddresses))
 	out.PostalCodes = *(*[]string)(unsafe.Pointer(&in.PostalCodes))
 	out.SerialNumber = in.SerialNumber
+	out.ExtraNames = *(*[]string)(unsafe.Pointer(&in.ExtraNames))
 	return nil
 }
 

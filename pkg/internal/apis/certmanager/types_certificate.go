@@ -239,6 +239,8 @@ type X509Subject struct {
 	PostalCodes []string
 	// Serial number to be used on the Certificate.
 	SerialNumber string
+	// Extra names to add to the Certificate in the format n.n.n=value.
+	ExtraNames []string
 }
 
 // CertificateKeystores configures additional keystore output formats to be

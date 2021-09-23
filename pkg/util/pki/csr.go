@@ -32,6 +32,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hashicorp/vault/sdk/helper/certutil"
 	apiutil "github.com/jetstack/cert-manager/pkg/api/util"
 	v1 "github.com/jetstack/cert-manager/pkg/apis/certmanager/v1"
 )
@@ -210,6 +211,23 @@ func GenerateCSR(crt *v1.Certificate) (*x509.CertificateRequest, error) {
 		}
 	}
 
+	extraNames := []pkix.AttributeTypeAndValue{}
+	for _, typeValue := range subject.ExtraNames {
+		parts := strings.Split(typeValue, "=")
+		if len(parts) == 2 {
+			oid, err := certutil.StringToOid(parts[0])
+			if err != nil {
+				return nil, fmt.Errorf("invalid OID format in %s. Should be n.n.n.n=value", typeValue)
+			}
+			extraNames = append(extraNames, pkix.AttributeTypeAndValue{
+				Type:  oid,
+				Value: parts[1],
+			})
+		} else {
+			return nil, fmt.Errorf("invalid extraNames format in %s. Should be n.n.n.n=value", typeValue)
+		}
+	}
+
 	return &x509.CertificateRequest{
 		// Version 0 is the only one defined in the PKCS#10 standard, RFC2986.
 		// This value isn't used by Go at the time of writing.
@@ -227,6 +245,7 @@ func GenerateCSR(crt *v1.Certificate) (*x509.CertificateRequest, error) {
 			PostalCode:         subject.PostalCodes,
 			SerialNumber:       subject.SerialNumber,
 			CommonName:         commonName,
+			ExtraNames:         extraNames,
 		},
 		DNSNames:        dnsNames,
 		IPAddresses:     iPAddresses,
