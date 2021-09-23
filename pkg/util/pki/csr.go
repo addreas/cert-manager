@@ -322,6 +322,23 @@ func GenerateTemplate(crt *v1.Certificate) (*x509.Certificate, error) {
 		return nil, err
 	}
 
+	extraNames := []pkix.AttributeTypeAndValue{}
+	for _, typeValue := range subject.ExtraNames {
+		parts := strings.Split(typeValue, "=")
+		if len(parts) == 2 {
+			oid, err := certutil.StringToOid(parts[0])
+			if err != nil {
+				return nil, fmt.Errorf("invalid OID format in %s. Should be n.n.n.n=value", typeValue)
+			}
+			extraNames = append(extraNames, pkix.AttributeTypeAndValue{
+				Type:  oid,
+				Value: parts[1],
+			})
+		} else {
+			return nil, fmt.Errorf("invalid extraNames format in %s. Should be n.n.n.n=value", typeValue)
+		}
+	}
+
 	return &x509.Certificate{
 		// Version must be 2 according to RFC5280.
 		// A version value of 2 confusingly means version 3.
@@ -342,6 +359,7 @@ func GenerateTemplate(crt *v1.Certificate) (*x509.Certificate, error) {
 			PostalCode:         subject.PostalCodes,
 			SerialNumber:       subject.SerialNumber,
 			CommonName:         commonName,
+			ExtraNames:         extraNames,
 		},
 		NotBefore: time.Now(),
 		NotAfter:  time.Now().Add(certDuration),
@@ -392,6 +410,14 @@ func GenerateTemplateFromCSRPEMWithUsages(csrPEM []byte, duration time.Duration,
 	serialNumber, err := rand.Int(rand.Reader, serialNumberLimit)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate serial number: %s", err.Error())
+	}
+
+	for _, name := range csr.Subject.Names {
+		// Reverse of crypto/x509/pkix.go:158
+		t := name.Type
+		if !(len(t) == 4 && t[0] == 2 && t[1] == 5 && t[2] == 4) {
+			csr.Subject.ExtraNames = append(csr.Subject.ExtraNames, name)
+		}
 	}
 
 	return &x509.Certificate{
